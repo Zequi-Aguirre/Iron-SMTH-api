@@ -10,6 +10,9 @@ const requestSchema = new Schema(
     description: {
       type: String,
     },
+    comments: {
+      type: Array,
+    },
     dueDate: {
       type: String,
     },

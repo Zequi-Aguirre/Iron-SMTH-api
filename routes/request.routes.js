@@ -25,8 +25,31 @@ router.post("/create", (req, res, next) => {
   console.log(req.body);
   Request.create(req.body)
     .then((newRequest) => {
-      console.log(newRequest);
-      res.json(newRequest);
+      Property.findByIdAndUpdate(req.body.property, {
+        $addToSet: { requests: newRequest },
+      }).then((updatedProperty) => {
+        console.log(updatedProperty);
+        res.json(updatedProperty);
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.json(err);
+    });
+});
+
+router.post("/edit", (req, res, next) => {
+  console.log(req.body);
+  Request.findByIdAndUpdate(req.body.requestID, {
+    property: req.body.property,
+    description: req.body.description,
+    dueDate: req.body.dueDate,
+    assignedTo: req.body.assignedTo,
+    status: req.body.status,
+  })
+    .then((updatedRequest) => {
+      console.log(updatedRequest);
+      res.json(updatedRequest);
     })
     .catch((err) => {
       console.log(err);

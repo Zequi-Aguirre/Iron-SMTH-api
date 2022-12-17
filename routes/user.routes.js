@@ -19,11 +19,23 @@ router.get("/all", (req, res, next) => {
     });
 });
 
-// Create Route
-router.post("/create", (req, res, next) => {
+router.get("/:userID", (req, res, next) => {
+  User.findById(req.params.userID)
+    .then((userFromDb) => {
+      console.log(userFromDb);
+      res.json(userFromDb);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.json(err);
+    });
+});
+
+router.post("/update/:userID", (req, res, next) => {
   console.log(req.body);
-  Property.create(req.body).then((newProperty) => {
-    console.log(newProperty);
+  User.findByIdAndUpdate(req.params.userID, req.body).then((updatedUser) => {
+    console.log(updatedUser);
+    res.json(updatedUser);
   });
 });
 

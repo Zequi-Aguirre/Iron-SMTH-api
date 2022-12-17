@@ -14,6 +14,7 @@ router.post("/signup", (req, res, next) => {
         // name: req.body.username,
         password: hashedPassword,
         email: req.body.email,
+        name: req.body.name,
       })
         .then((newUser) => {
           res.json({ message: "successfully signed up new account" });
@@ -84,7 +85,7 @@ function serializeTheUserObject(userObj) {
   if (userObj.username) result.username = userObj.username;
   if (userObj.email) result.email = userObj.email;
   if (userObj._id) result._id = userObj._id;
-  if (userObj._id) result.userType = userObj.userType;
+  if (userObj.userType) result.userType = userObj.userType;
   return result;
 }
 

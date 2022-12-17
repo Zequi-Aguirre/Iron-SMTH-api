@@ -3,12 +3,15 @@ const router = express.Router();
 const Property = require("../models/Property.model");
 const User = require("../models/User.model");
 const Request = require("../models/Request.model");
+const axios = require("axios");
 
 // *** A Form with a post method will return the info from the form in the req.body
 // *** A Form with a get method will return the info from the form in the req.query
 
 router.get("/all", (req, res, next) => {
   Property.find()
+    .populate("requests")
+
     .then((propertiesFromDb) => {
       // console.log(propertiesFromDb);
       // res.json({ prop: propertiesFromDb, name: "test" });
@@ -28,6 +31,64 @@ router.post("/create", (req, res, next) => {
     .then((newProperty) => {
       console.log(newProperty);
       res.json(newProperty);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.json(err);
+    });
+});
+
+router.post("/create-from-fub", (req, res, next) => {
+  console.log("req.body");
+  console.log(req.body);
+
+  const options = {
+    method: "GET",
+    url: `https://api.followupboss.com/v1/people/` + req.body.leadID,
+    headers: {
+      "X-System": "Zequi-Buyer-App",
+      "X-System-Key": "a3c62a5b90680ec768a39c14b366b2b3",
+      accept: "application/json",
+      "content-type": "application/json",
+      authorization: process.env.FUBKEY,
+    },
+  };
+
+  axios
+    .request(options)
+    .then(function (response) {
+      console.log(response.data);
+      Property.create({
+        name: response.data.name,
+        address: response.data.addresses[0].street,
+      })
+        .then((newProperty) => {
+          console.log(newProperty);
+          res.json(newProperty);
+        })
+        .catch((err) => {
+          console.log(err);
+          res.json(err);
+        });
+    })
+    .catch(function (error) {
+      console.error(error);
+    });
+
+  // console.log("req.body");
+  // console.log(req.body);
+});
+
+router.post("/update", (req, res, next) => {
+  console.log("req.body");
+  console.log(req.body);
+  Property.findByIdAndUpdate(req.body.propertyID, {
+    name: req.body.name,
+    address: req.body.address,
+  })
+    .then((updatedProperty) => {
+      console.log({ updatedProperty });
+      res.json(updatedProperty);
     })
     .catch((err) => {
       console.log(err);
